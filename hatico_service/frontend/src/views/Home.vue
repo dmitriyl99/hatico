@@ -1,0 +1,33 @@
+<template>
+  <div class="home">
+    <div class="px-4 py-5 my-5 text-center">
+      <img
+        class="d-block mx-auto mb-4"
+        src="../assets/img/search_icon.png"
+        alt=""
+        width="200"
+      />
+      <h1 class="display-5 fw-bold">Поможем найти пропавшее животное</h1>
+      <div class="col-lg-6 mx-auto">
+        <p class="lead mb-4">
+          Нейросеть найдёт вашего питомца с городских камер видеонаблюдения
+        </p>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+          <a href='#search' class="btn btn-primary btn-lg px-4 gap-3">
+            К поиску
+          </a>
+        </div>
+      </div>
+    </div>
+    <Search />
+  </div>
+</template>
+
+<script>
+import Search from "@/components/Search.vue";
+
+export default {
+  name: "Home",
+  components: {Search}
+};
+</script>

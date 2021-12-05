@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+
+  backend_db:
+    build:
+      context: ./backend/db
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - 27017:27017
+    volumes:
+      - backend_data:/data/db
+      - ./:/opt/keyfile/
+    container_name: hatico_backend_db
+    healthcheck:
+      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo --quiet) -eq 1
+      interval: 10s
+      start_period: 30s
+  
+  backend_api:
+    build:
+      context: ./backend/api
+    depends_on:
+      - backend_db
+    environment:
+      - MONGO_DB_HOST=backend_db
+      - MONGO_DB_NAME=hatico
+      - PROJECT_NAME="Hati.Co"
+      - API_V1_STR=/api/v1
+      - BACKEND_CORS_ORIGINS=["http://localhost:8080", "http://localhost"]
+    container_name: hatico_backend_api
+  
+  backend_worker:
+    build:
+      context: ./backend/worker
+    depends_on:
+      - backend_db
+    environment:
+      - MONGO_DB_HOST=backend_db
+      - MONGO_DB_NAME=hatico
+      - DATA_DIR=/app/data
+  
+  proxy:
+    build: ./proxy
+    ports:
+      - 80:80
+    depends_on:
+      - backend_api
+    container_name: hatico_backend_proxy
+
+volumes:
+  backend_data: {}
